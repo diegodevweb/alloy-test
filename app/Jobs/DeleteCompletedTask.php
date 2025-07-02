@@ -21,16 +21,15 @@ class DeleteCompletedTask implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(int $taskId, TaskCacheService $cacheService)
+    public function __construct(int $taskId)
     {
         $this->taskId = $taskId;
-        $this->cacheService = $cacheService;
     }
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(TaskCacheService $cacheService): void
     {
 
         try {
@@ -50,8 +49,8 @@ class DeleteCompletedTask implements ShouldQueue
 
             $task->forceDelete();
 
-            $this->cacheService->invalidateTag('tasks');
-            $this->cacheService->invalidateTag("task.{$this->taskId}");
+            $cacheService->invalidateTag('tasks');
+            $cacheService->invalidateTag("task.{$this->taskId}");
 
             Log::info("Tarefa {$this->taskId} excluída definitivamente com sucesso.");
 
